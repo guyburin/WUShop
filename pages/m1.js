@@ -1,7 +1,8 @@
 /*Screen to register the user*/
 import React from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Alert ,TextInput,StyleSheet, Text,FlatList,Image,
+import { View, ScrollView, KeyboardAvoidingView, Alert ,TextInput,StyleSheet,FlatList,Image,
   TouchableOpacity,} from 'react-native';
+  import { Container, Header, Content, Footer, FooterTab, Icon, Badge ,Button,Text} from 'native-base';
 import Mytextinput from './components/Mytextinput';
 import Mybutton from './components/Mybutton';
 import Mybuttondel from './components/Mybuttondel';
@@ -90,34 +91,34 @@ export default class m1 extends React.Component {
     }
   };
   // placeholder="Enter Name"
-  deletePost = () => {
-    var that = this;
-    const { post_id } = this.state;
+  deletepost = (post_id) => {
+    // alert(post_id);
     db.transaction(tx => {
       tx.executeSql(
-        'DELETE FROM post where post_id=?',
+        'DELETE FROM  post where post_id=?',
         [post_id],
         (tx, results) => {
-          console.log('Results', results.rowsAffected);
+          // console.log('Results', results.rowsAffected);
+          // alert(JSON.stringify(results));
           if (results.rowsAffected > 0) {
             Alert.alert(
               'Success',
-              'User deleted successfully',
+              'Post deleted successfully',
               [
                 {
                   text: 'Ok',
-                  onPress: () => that.props.navigation.navigate('HomeScreen'),
+                  onPress: () => this.props.navigation.navigate('m1'),
                 },
               ],
               { cancelable: false }
             );
           } else {
-            alert('Please insert a valid User Id');
+            alert('Delete error Post Id');
           }
         }
       );
     });
-  };
+};
 
 
   render() {
@@ -127,7 +128,7 @@ export default class m1 extends React.Component {
           <KeyboardAvoidingView
             behavior="padding"
             style={{ flex: 1, justifyContent: 'space-between' }}>
-        <Text style={{marginLeft: 50,fontSize: 20}}>POST</Text>
+        <Text style={{marginLeft: 50,fontSize: 20}}>Post</Text>
         <TextInput
           style={styles.textbox}
           placeholder="Profile"
@@ -161,44 +162,7 @@ export default class m1 extends React.Component {
               title="Submit"
               customClick={this.register_user.bind(this)}
             />
-          {/* <FlatList
-          data={this.state.FlatListItems}
-          ItemSeparatorComponent={this.ListViewItemSeparator}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View key={item.post_id} style={{ backgroundColor: 'white', padding: 20 ,marginLeft:50}}>
-              <Text>ผู้ใช้ : {item.user_name +' ID:'+ item.post_id}</Text>
-              <Text>ความคิดเห็น: {item.comment}</Text>
-              <View style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}><Image source={{uri: item.img}}
-              style={{width: 300, height: 175,marginBottom:5,marginTop:5}} /></View>
-              <Text>โพสต์เมื่อ : {item.time}</Text>
-              
-              <Mybuttonedit
-              title="Edit"
-              customClick={() => this.props.navigation.navigate('edit')}
-              />
-              <View style={styles.layoutrow}>
-              <Text>ระบุ Id :</Text>
-              <TextInput
-                style={styles.textboxs}
-                // placeholder="Link image"
-                onChangeText={(post_id) => this.setState({post_id})}
-                value={item.post_id}
-              />
-              
-              <Mybuttondel
-              title="del"
-              value={item.post_id}
-              customClick={this.deletePost.bind(this)}
-              onChangeText={(post_id) => this.setState({ post_id })}
-              />
-              </View>
-            </View>
-          )}
-        /> */}
+  
         <FlatList style={styles.list}
           data={this.state.FlatListItems}
           keyExtractor= {(item) => {
@@ -224,7 +188,8 @@ export default class m1 extends React.Component {
                   </View>
                 </View>
 
-                <Image style={styles.cardImage} source={{uri:item.img}}/>
+                <TouchableOpacity onPress ={()=>{this.props.navigation.navigate('edit')}}><Image style={styles.cardImage} source={{uri:item.img}}/></TouchableOpacity>
+
                 
                 <View style={styles.cardFooter}>
                   <View style={styles.socialBarContainer}>
@@ -235,16 +200,16 @@ export default class m1 extends React.Component {
                       </TouchableOpacity>
                     </View>
                     
-                    <View style={styles.socialBarSection}>
-                      <TouchableOpacity style={styles.socialBarButton} onPress ={()=>{this.props.navigation.navigate('edit')}}>
+                    <View style={styles.socialBarSection} key={item.post_id}>
+                      <TouchableOpacity style={styles.socialBarButton} onPress ={()=>{this.props.navigation.navigate('edit',{post_id: item.post_id})}}>
                         <Image style={styles.icon} source={{uri: 'https://img.icons8.com/material-rounded/24/000000/edit.png'}}  />
                         <Text style={styles.socialBarLabel}>Edit</Text>
                       </TouchableOpacity>
                     </View>
                     <View style={styles.socialBarSection}>
-                      <TouchableOpacity style={styles.socialBarButton}>
-                        <Image style={styles.icon} source={{uri: 'https://png.icons8.com/metro/75/3498db/administrator-male.png'}}/>
-                        <Text rkType='primary4 hintColor' style={styles.socialBarLabel}>13</Text>
+                    <TouchableOpacity style={styles.socialBarButton} onPress={() => this.deletepost(item.post_id)}>
+                        <Image style={styles.icon} source={{uri: 'https://img.icons8.com/color/48/000000/recycle-bin.png'}}/>
+                        <Text rkType='primary4 hintColor' style={styles.socialBarLabel}>Delete</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -253,6 +218,29 @@ export default class m1 extends React.Component {
             )
           }}/>
         </ScrollView>
+        <Content />
+          <Footer>
+          <FooterTab style = {{ backgroundColor: '#ffcc33', color:'#ffffff'}}>
+            <Button active style={{backgroundColor:'##B6B900',color:'#eeeeee'}} vertical >
+              {/* <Badge><Text>2</Text></Badge> */}
+              <Icon style={{color:'#ffffff'}}  name="home" />
+              <Text style={{color:'#ffffff'}}>Home</Text>
+            </Button>
+            <Button style={{backgroundColor:'##B6B900',color:'#ffffff'}} vertical  onPress={() => this.props.navigation.navigate('Post')}>
+              <Icon style={{color:'#ffffff'}} name="book" />
+              <Text style={{color:'#ffffff'}}>Post</Text>
+            </Button>
+            <Button style={{backgroundColor:'##B6B900',color:'#ffffff'}} vertical onPress={() => this.props.navigation.navigate('chat')}>
+              {/* <Badge ><Text>2</Text></Badge> */}
+              <Icon style={{color:'#ffffff'}} name="chatboxes" />
+              <Text style={{color:'#ffffff'}}>Chat</Text>
+            </Button> 
+             <Button style={{backgroundColor:'##B6B900',color:'#ffffff'}} vertical onPress={() => this.props.navigation.navigate('profile')}>
+              <Icon style={{color:'#ffffff'}} name="contact" />
+              <Text style={{color:'#ffffff'}}>Profile</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
       </View>
     );
   }

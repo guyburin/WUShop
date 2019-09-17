@@ -1,7 +1,7 @@
 /*Home Screen With buttons to navigate to different options*/
 import React, { Component } from 'react';
-import { View,Text ,StyleSheet,ActivityIndicator,Image,FlatList,RefreshControl,Button,TouchableOpacity} from 'react-native';
-
+import { View ,StyleSheet,ActivityIndicator,Image,FlatList,RefreshControl,TouchableOpacity} from 'react-native';
+import { Container, Header, Content, Footer, FooterTab, Icon, Badge ,Button,Text} from 'native-base';
 import Mybuttonhome from './components/Mybuttonhome';
 import { TextInput } from 'react-native';
 import Mytext from './components/Mytext';
@@ -17,7 +17,9 @@ export default class HomeScreen extends React.Component {
       titleText: "----------หมวดหมู่----------",
       bodyText: 'This is not really a bird nest.',
       FlatListItems: [],
-      loading :'false'
+      loading :'false',
+      like:4,
+
     };
     db.transaction(function(txn) {
       txn.executeSql(
@@ -28,7 +30,7 @@ export default class HomeScreen extends React.Component {
           if (res.rows.length == 0) {
             txn.executeSql('DROP TABLE IF EXISTS post', []);
             txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS post(post_id INTEGER PRIMARY KEY AUTOINCREMENT, user_name VARCHAR(255), comment VARCHAR(255), img VARCHAR(255),time VARCHAR(255))',
+              'CREATE TABLE IF NOT EXISTS post(post_id INTEGER PRIMARY KEY AUTOINCREMENT, user_name VARCHAR(255), comment VARCHAR(255), img VARCHAR(255),time VARCHAR(255),like INTEGER)',
               []
             );
           }
@@ -40,6 +42,72 @@ export default class HomeScreen extends React.Component {
     
   }
   
+  deletepost = (post_id) => {
+    alert(post_id);
+    db.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM  post where post_id=?',
+        [post_id],
+        (tx, results) => {
+          // console.log('Results', results.rowsAffected);
+          // alert(JSON.stringify(results));
+          if (results.rowsAffected > 0) {
+            Alert.alert(
+              'Success',
+              'Post deleted successfully',
+              [
+                {
+                  text: 'Ok',
+                  onPress: () => this.props.navigation.navigate('HomeScreen'),
+                },
+              ],
+              { cancelable: false }
+            );
+          } else {
+            alert('Delete error Post Id');
+          }
+        }
+      );
+    });
+};
+
+addlike = (post_id) => {
+  // alert('come in');
+  var likeview=this.state.like+1;
+  this.setState({like:likeview})
+  var that = this;
+  const { like } = this.state;
+
+  // alert(like+" "+post_id);
+  
+      if (like) {
+        // alert('come in 3');
+        db.transaction(function(tx) {
+          tx.executeSql('UPDATE post SET like=? WHERE post_id=?',
+          [like,post_id],
+            (tx, results) => {
+              // console.log('Results', results.rowsAffected);
+              
+                Alert.alert(
+                  "suscess",[
+                    {
+                      text: 'Ok',
+                      onPress: () =>
+                        that.props.navigation.navigate('HomeScreen'),
+                    },]
+                  
+                  
+                );
+  
+              // alert('suscess')
+            }
+            // ,(error) => { alert(error) }// ,(error) => { alert(JSON.stringify(error)) }
+          );
+        });
+      } else {
+        alert('Like fail');
+      }
+};
   
   componentWillMount(){
     db.transaction(tx => {
@@ -144,21 +212,21 @@ export default class HomeScreen extends React.Component {
                 <View style={styles.cardFooter}>
                   <View style={styles.socialBarContainer}>
                     <View style={styles.socialBarSection}>
-                      <TouchableOpacity style={styles.socialBarButton}>
+                      <TouchableOpacity style={styles.socialBarButton} onPress={() => {this.addlike(item.post_id)}}>
                         <Image style={styles.icon} source={{uri: 'https://png.icons8.com/android/75/e74c3c/hearts.png'}}/>
-                        <Text style={styles.socialBarLabel}>78</Text>
+                        <Text style={styles.socialBarLabel} >{this.state.like}</Text>
                       </TouchableOpacity>
                     </View>
-                    <View style={styles.socialBarSection}>
-                      <TouchableOpacity style={styles.socialBarButton} onPress ={()=>{this.props.navigation.navigate('edit')}}>
+                    <View style={styles.socialBarSection} key={item.post_id}>
+                      <TouchableOpacity style={styles.socialBarButton} onPress ={()=>{this.props.navigation.navigate('edit',{post_id: item.post_id})}}>
                         <Image style={styles.icon} source={{uri: 'https://img.icons8.com/material-rounded/24/000000/edit.png'}}/>
                         <Text style={styles.socialBarLabel}>Edit</Text>
                       </TouchableOpacity>
                     </View>
                     <View style={styles.socialBarSection}>
-                      <TouchableOpacity style={styles.socialBarButton}>
-                        <Image style={styles.icon} source={{uri: 'https://png.icons8.com/metro/75/3498db/administrator-male.png'}}/>
-                        <Text rkType='primary4 hintColor' style={styles.socialBarLabel}>13</Text>
+                      <TouchableOpacity style={styles.socialBarButton} onPress={() => {this.deletepost(item.post_id)}}>
+                        <Image style={styles.icon} source={{uri: 'https://img.icons8.com/color/48/000000/recycle-bin.png'}}/>
+                        <Text rkType='primary4 hintColor' style={styles.socialBarLabel}>Delete</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -167,6 +235,31 @@ export default class HomeScreen extends React.Component {
             )
           }}/>
          </View>
+         
+         <Content />
+          <Footer>
+          <FooterTab style = {{ backgroundColor: '#ffcc33', color:'#ffffff'}}>
+            <Button active style={{backgroundColor:'##B6B900',color:'#eeeeee'}} vertical >
+              {/* <Badge><Text>2</Text></Badge> */}
+              <Icon style={{color:'#ffffff'}}  name="home" />
+              <Text style={{color:'#ffffff'}}>Home</Text>
+            </Button>
+            <Button style={{backgroundColor:'##B6B900',color:'#ffffff'}} vertical  onPress={() => this.props.navigation.navigate('Post')}>
+              <Icon style={{color:'#ffffff'}} name="book" />
+              <Text style={{color:'#ffffff'}}>Post</Text>
+            </Button>
+            <Button style={{backgroundColor:'##B6B900',color:'#ffffff'}} vertical onPress={() => this.props.navigation.navigate('chat')}>
+              {/* <Badge ><Text>2</Text></Badge> */}
+              <Icon style={{color:'#ffffff'}} name="chatboxes" />
+              <Text style={{color:'#ffffff'}}>Chat</Text>
+            </Button> 
+             <Button style={{backgroundColor:'##B6B900',color:'#ffffff'}} vertical onPress={() => this.props.navigation.navigate('profile')}>
+              <Icon style={{color:'#ffffff'}} name="contact" />
+              <Text style={{color:'#ffffff'}}>Profile</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
+
       </View> 
     );
   }
@@ -184,7 +277,7 @@ const styles = StyleSheet.create({
       marginRight: 50,
   },
   textbox2:{
-    marginTop: -40,
+    marginTop: 0,
       marginLeft: 50,
       marginRight: 50,
   },
@@ -201,6 +294,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft:0,
+    marginTop: 20,
     height:90},
     stretch: {
       alignContent : 'center',

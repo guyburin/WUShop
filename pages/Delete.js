@@ -9,7 +9,7 @@ export default class UpdateUser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      input_user_id: '',
+      post_id: '',
     };
   }
   deleteUser = () => {

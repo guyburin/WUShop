@@ -11,9 +11,15 @@ import m3 from './pages/m3';
 import m4 from './pages/m4';
 import m5 from './pages/m5';
 import m6 from './pages/m6';
-import buy from './pages/buy';
+import buy from './pages/Postdetail';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import profile from './pages/profile';
+import logo from './pages/logo';
+import Post from './pages/Post';
+import Postdetail from './pages/Postdetail';
 import edit from './pages/edit';
+import chat from './pages/chat';
 import HomeScreen from './pages/HomeScreen';
 
  
@@ -38,12 +44,77 @@ import HomeScreen from './pages/HomeScreen';
 // });
 
 const App = createStackNavigator({
-  
+  logo: {
+    screen: logo,
+    navigationOptions: {
+      headerStyle: { backgroundColor: '#ffcc33'}, 
+      headerTintColor: '#ffffff',
+    },
+  },
+  chat: {
+    screen: chat,
+    navigationOptions: {
+      title: 'Chat',
+      headerTitleStyle: { 
+        textAlign:"center", 
+        flex:1 
+    },
+      headerStyle: { backgroundColor: '#ffcc33'}, 
+      headerTintColor: '#ffffff',
+      
+    },
+  },
   login: {
     screen: Login,
     navigationOptions: {
-      headerStyle: { backgroundColor: '#ffffff'}, 
+      headerStyle: { backgroundColor: '#ffcc33'}, 
       headerTintColor: '#ffffff',
+    },
+  },
+  register: {
+    screen: Register,
+    navigationOptions: {
+      headerStyle: { backgroundColor: '#ffcc33'}, 
+      headerTintColor: '#ffffff',
+    },
+  },
+  profile: {
+    screen: profile,
+    navigationOptions: {
+      title: 'WU SHOP',
+      headerTitleStyle: { 
+        textAlign:"center", 
+        flex:1 
+    },
+      headerStyle: { backgroundColor: '#ffcc33'}, 
+      headerTintColor: '#ffffff',
+      
+    },
+  },
+  Post: {
+    screen: Post,
+    navigationOptions: {
+      title: 'Post',
+      headerTitleStyle: { 
+        textAlign:"center", 
+        flex:1 
+    },
+      headerStyle: { backgroundColor: '#ffcc33'}, 
+      headerTintColor: '#ffffff',
+      
+    },
+  },
+  Postdetail: {
+    screen: Postdetail,
+    navigationOptions: {
+      title: 'Post',
+      headerTitleStyle: { 
+        textAlign:"center", 
+        flex:1 
+    },
+      headerStyle: { backgroundColor: '#ffcc33'}, 
+      headerTintColor: '#ffffff',
+      
     },
   },
   HomeScreen: {

@@ -15,38 +15,50 @@ export default class edit extends React.Component {
       comment: '',
       img: '',
     };
-  }
-  searchPost = () => {
-    const {post_id} =this.state;
-    // alert(post_id);
-    console.log(this.state.input_user_id);
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM post where post_id = ?',
-        [post_id],
-        (tx, results) => {
-          var len = results.rows.length;
-          console.log('len',len);
-          if (len > 0) {
-            console.log(results.rows.item(0).user_contact);
-            this.setState({
-             comment:results.rows.item(0).comment,
-            });
-            this.setState({
-             img:results.rows.item(0).img,
-            });
-          }else{
-            alert('No user found');
-            this.setState({
-              user_name:'',
-              comment:'',
-              img:'',
-            });
+    const { navigation } = this.props;  
+    const post_id = navigation.getParam('post_id');
+
+    if( post_id!= null){
+      db.transaction(tx => {
+        tx.executeSql(
+          'SELECT * FROM post where post_id = ?',
+          [post_id],
+          (tx, results) => {
+            var len = results.rows.length;
+            console.log('len',len);
+            if (len > 0) {
+              // console.log(results.rows.item(0).user_contact);
+              this.setState({
+                post_id: results.rows.item(0).post_id
+              });
+              this.setState({
+                user_name:results.rows.item(0).user_name,
+              });
+              this.setState({
+                comment:results.rows.item(0).comment,
+              });
+              this.setState({
+                img:results.rows.item(0).img,
+              });
+            }else{
+              alert('No found');
+              this.setState({
+                book_ser: '',
+                book_car: '',
+                book_start: '',
+                book_end: '',
+                date: '',
+              });
+            }
           }
-        }
-      );
-    });
-  };
+        );
+      });
+    }
+  }
+
+  
+
+  
   editPost = () => {
     var that=this;
     const { post_id } = this.state;
@@ -92,7 +104,7 @@ export default class edit extends React.Component {
           <KeyboardAvoidingView
             behavior="padding"
             style={{ flex: 1, justifyContent: 'space-between' }}>
-            <Mytextinput
+            {/* <Mytextinput
               placeholder="Enter Psot Id"
               style={{ padding:10 ,borderRadius: 15,}}
               onChangeText={post_id => this.setState({ post_id })}
@@ -100,7 +112,7 @@ export default class edit extends React.Component {
             <Mybutton
               title="Search User"
               customClick={this.searchPost.bind(this)}
-            />
+            /> */}
             <Mytextinput
               value={this.state.comment}
               placeholder="Enter comment"
